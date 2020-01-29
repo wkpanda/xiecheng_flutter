@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:http/http.dart' as http;
 import 'package:xiecheng/dao/home_dao.dart';
+import 'package:xiecheng/model/common_model.dart';
+import 'package:xiecheng/model/grid_nav_model.dart';
 import 'dart:convert';
 
 import 'package:xiecheng/model/home_model.dart';
+import 'package:xiecheng/widgets/grid_nav.dart';
+import 'package:xiecheng/widgets/local_nav.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
 
@@ -22,7 +26,8 @@ class _HomePageState extends State<HomePage> {
     'https://dimg04.c-ctrip.com/images/zg0q1b000001aoz7a2BA8.jpg',
     'https://dimg04.c-ctrip.com/images/zg0h1c000001d1kigEB29.jpg'
   ];
-  String resultString = "";
+  List<CommonModel> localNavList = [];
+  GridNavModel gridNavModel;
   double appBarAlpha = 0; //自定义appbar的透明度
 
   @override
@@ -57,12 +62,11 @@ class _HomePageState extends State<HomePage> {
     try{
       HomeModel model = await HomeDao.fetch();
       setState((){
-          resultString = json.encode(model.config); //将model转换成string
+          localNavList = model.localNavList; //将model转换成string
+          gridNavModel = model.gridNav;
         });
     }catch (e){
-      setState((){
-        resultString = e.toString();
-      });
+      print(e);
     }
     
 
@@ -71,6 +75,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Color(0xffff2f2f2),
         body: Stack(
           children: <Widget>[
             MediaQuery.removePadding(
@@ -103,11 +108,15 @@ class _HomePageState extends State<HomePage> {
                           pagination: SwiperPagination(),
                         ),
                       ),
-                      Container(
-                        height: 800,
-                        child: ListTile(
-                          title: Text(resultString),
-                        ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
+                        child: LocalNav(
+                        localNavList: localNavList,
+                       ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7,0,7,4),
+                        child:GridNav(gridNavModel: gridNavModel,)
                       )
                     ],
                   ),

@@ -28,6 +28,7 @@ dependencies:
   json_serializable: ^3.2.5  #学习用
   built_value: ^7.0.8     # 学习用
   shared_preferences: ^0.5.6+1
+  flutter_webview_plugin: ^0.3.10+1
 
 dev_dependencies:
   flutter_test:

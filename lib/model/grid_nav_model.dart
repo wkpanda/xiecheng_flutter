@@ -31,7 +31,7 @@ class GridNavItem{
   factory GridNavItem.fromJson(Map<String,dynamic> json){
     return GridNavItem(
       startColor: json['startColor'],
-      endColor: json['endColoe'],
+      endColor: json['endColor'],
       mainItem: CommonModel.fromJson(json['mainItem']),
       item1: CommonModel.fromJson(json['item1']),
       item2: CommonModel.fromJson(json['item2']),
