@@ -7,8 +7,11 @@ import 'package:xiecheng/model/grid_nav_model.dart';
 import 'dart:convert';
 
 import 'package:xiecheng/model/home_model.dart';
+import 'package:xiecheng/model/sales_box_model.dart';
 import 'package:xiecheng/widgets/grid_nav.dart';
 import 'package:xiecheng/widgets/local_nav.dart';
+import 'package:xiecheng/widgets/sales_box.dart';
+import 'package:xiecheng/widgets/sub_nav.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
 
@@ -27,7 +30,9 @@ class _HomePageState extends State<HomePage> {
     'https://dimg04.c-ctrip.com/images/zg0h1c000001d1kigEB29.jpg'
   ];
   List<CommonModel> localNavList = [];
+  List<CommonModel> subNavList = [];
   GridNavModel gridNavModel;
+  SalesBoxModel salesBox;
   double appBarAlpha = 0; //自定义appbar的透明度
 
   @override
@@ -64,6 +69,8 @@ class _HomePageState extends State<HomePage> {
       setState((){
           localNavList = model.localNavList; //将model转换成string
           gridNavModel = model.gridNav;
+          subNavList = model.subNavList;
+          salesBox = model.salesBox;
         });
     }catch (e){
       print(e);
@@ -117,6 +124,13 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: EdgeInsets.fromLTRB(7,0,7,4),
                         child:GridNav(gridNavModel: gridNavModel,)
+                      ),Padding(
+                        padding: EdgeInsets.fromLTRB(7,0,7,4),
+                        child:SubNav(subNavList: subNavList,)
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7,0,7,4),
+                        child:SalesBox(salesBox: salesBox,)
                       )
                     ],
                   ),
