@@ -6,6 +6,7 @@ import 'package:xiecheng/model/grid_nav_model.dart';
 
 import 'package:xiecheng/model/home_model.dart';
 import 'package:xiecheng/model/sales_box_model.dart';
+import 'package:xiecheng/pages/search_page.dart';
 import 'package:xiecheng/widgets/grid_nav.dart';
 import 'package:xiecheng/widgets/loading_container.dart';
 import 'package:xiecheng/widgets/local_nav.dart';
@@ -253,6 +254,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _jumpToSearch() {}
-  _jumpToSpeak() {}
+  _jumpToSearch() {
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>SearchPage(hint:SEARCH_BAR_DEFAULT_TEXT),));
+  }
+  _jumpToSpeak() {
+  //  Navigator.push(context, MaterialPageRoute(builder: (context)=>SpeakPage()));
+
+  }
 }

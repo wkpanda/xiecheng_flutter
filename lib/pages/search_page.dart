@@ -1,7 +1,10 @@
+//import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:xiecheng/dao/search_dao.dart';
 import 'package:xiecheng/model/sesarch_model.dart';
 import 'package:xiecheng/widgets/search_bar.dart';
+import 'package:xiecheng/widgets/webview.dart';
 
 const SEARCH_URL =
     'https://m.ctrip.com/restapi/h5api/searchapp/search?source=mobileweb&action=autocomplete&contentType=json&keyword=';
@@ -32,7 +35,7 @@ class _SearchPageState extends State<SearchPage> {
       // appBar: AppBar(title: Text('搜索')),
       body: Column(
         children: <Widget>[
-          _appBar(),
+          _appBar(context),
           MediaQuery.removePadding(
               removeTop: true,
               context: context,
@@ -41,7 +44,7 @@ class _SearchPageState extends State<SearchPage> {
                   child: ListView.builder(
                       itemCount: searchModel?.data?.length ?? 0,
                       itemBuilder: ((BuildContext context, int position) {
-                        return _item(position);
+                        return _item(context,position);
                       }))))
         ],
       ),
@@ -56,20 +59,18 @@ class _SearchPageState extends State<SearchPage> {
       });
       return;
     }
-    String url = widget.searchUrl + text;
-    SearchDao.fetch(url, text).then((SearchModel model) {
+    SearchDao.fetch(keyword, text).then((SearchModel model) {
       //只有当当前输入的内容和服务端返回的内容一致时才渲染
-      if (model.keyword == keyword) {
         setState(() {
           searchModel = model;
         });
-      }
+      
     }).catchError((e) {
       print(e);
     });
   }
 
-  _appBar() {
+  Widget _appBar(BuildContext context) {
     return Column(children: <Widget>[
       Container(
         decoration: BoxDecoration(
@@ -96,11 +97,36 @@ class _SearchPageState extends State<SearchPage> {
     ]);
   }
 
-  _item(int position) {
+  Widget _item(BuildContext context,int position) {
     if (searchModel == null || searchModel.data == null) {
       return null;
     }
     SearchItem item = searchModel.data[position];
-    return Text(item.word);
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(context, MaterialPageRoute(builder: (context){
+          WebView(
+            url:item.url,
+            title:'详情'
+          );
+        }));
+      },
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          border:Border(bottom: BorderSide(width: 0.3,color:Colors.grey)),
+        ),
+        child: Row(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                Container(width: 300,child:Text('${item.word} ${item.districtname??''} ${item.zonename??''}')),
+                Container(width: 300,child:Text('${item.price??''} ${item.type??''}'))
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
