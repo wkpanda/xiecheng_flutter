@@ -9,6 +9,22 @@ import 'package:xiecheng/widgets/webview.dart';
 const SEARCH_URL =
     'https://m.ctrip.com/restapi/h5api/searchapp/search?source=mobileweb&action=autocomplete&contentType=json&keyword=';
 
+const TYPES = [
+  'channelgroup',
+  'gs',
+  'plane',
+  'train',
+  'curise',
+  'district',
+  'food',
+  'hotel',
+  'huodong',
+  'shop',
+  'sight',
+  'ticket',
+  'travelgroup'
+];
+
 class SearchPage extends StatefulWidget {
   SearchPage(
       {Key key,
@@ -44,7 +60,7 @@ class _SearchPageState extends State<SearchPage> {
                   child: ListView.builder(
                       itemCount: searchModel?.data?.length ?? 0,
                       itemBuilder: ((BuildContext context, int position) {
-                        return _item(context,position);
+                        return _item(context, position);
                       }))))
         ],
       ),
@@ -61,10 +77,9 @@ class _SearchPageState extends State<SearchPage> {
     }
     SearchDao.fetch(keyword, text).then((SearchModel model) {
       //只有当当前输入的内容和服务端返回的内容一致时才渲染
-        setState(() {
-          searchModel = model;
-        });
-      
+      setState(() {
+        searchModel = model;
+      });
     }).catchError((e) {
       print(e);
     });
@@ -97,36 +112,113 @@ class _SearchPageState extends State<SearchPage> {
     ]);
   }
 
-  Widget _item(BuildContext context,int position) {
+  Widget _item(BuildContext context, int position) {
     if (searchModel == null || searchModel.data == null) {
       return null;
     }
     SearchItem item = searchModel.data[position];
     return GestureDetector(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context){
-          WebView(
-            url:item.url,
-            title:'详情'
-          );
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          WebView(url: item.url, title: '详情');
         }));
       },
       child: Container(
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
-          border:Border(bottom: BorderSide(width: 0.3,color:Colors.grey)),
+          border: Border(bottom: BorderSide(width: 0.3, color: Colors.grey)),
         ),
         child: Row(
           children: <Widget>[
+            Container(
+              margin: EdgeInsets.all(1),
+              child: Image(
+                height: 26,
+                width: 26,
+                image: AssetImage(_typeImage(item.type)),
+              ),
+            ),
             Column(
               children: <Widget>[
                 Container(width: 300,child:Text('${item.word} ${item.districtname??''} ${item.zonename??''}')),
                 Container(width: 300,child:Text('${item.price??''} ${item.type??''}'))
+                // Container(width: 300, child: _title(item)),
+                // Container(
+                //   width: 300,
+                //   child: _subTitle(item),
+                //   margin: EdgeInsets.only(top: 5),
+                // )
               ],
             )
           ],
         ),
       ),
     );
+  }
+
+  _typeImage(String type) {
+    if (type == null) return 'assets/images/type_travelgroup.png';
+    String path = "travelgroup";
+    for (final val in TYPES) {
+      if (type.contains(val)) {
+        path = val;
+        break;
+      }
+    }
+    return "assets/images/type_${path}.png";
+  }
+
+  _title(SearchItem item) {
+    if (item == null) {
+      return null;
+    }
+    List<TextSpan> spans = [];
+    spans.addAll(_keywordTextSpans(item.word, searchModel.keyword));
+    spans.add(TextSpan(
+        text: ' ' + (item.districtname ?? '') + ' ' + (item.zonename ?? ''),
+        style: TextStyle(fontSize: 12, color: Colors.grey)));
+    return RichText(
+      text: TextSpan(children: spans),
+    );
+  }
+
+  //搜索副标题
+  Widget _subTitle(SearchItem item) {
+    if (item == null) return null;
+    return RichText(
+      text: TextSpan(children: <TextSpan>[
+        TextSpan(
+            text: item.price ?? '',
+            style: TextStyle(fontSize: 16, color: Colors.orange)),
+        TextSpan(
+            text: ' ' + (item.type ?? ''),
+            style: TextStyle(fontSize: 12, color: Colors.grey))
+      ]),
+    );
+  }
+
+  //关键字高亮处理
+  List<TextSpan> _keywordTextSpans(String word, String keyword) {
+    List<TextSpan> spans = [];
+    if (word == null || word.length == 0) return spans;
+    List<String> arr = word.split(keyword);
+    TextStyle normalStyle = TextStyle(fontSize: 16, color: Colors.black87);
+    TextStyle keywordStyle = TextStyle(fontSize: 16, color: Colors.orange);
+    //'wordwoc'.split('w') -> [, ord, oc]
+    int preIndex = 0;
+    for (int i = 0; i < arr.length; i++) {
+      if (i != 0) {
+        //搜索关键字高亮忽略大小写
+        preIndex = word.indexOf(keyword, preIndex);
+        spans.add(TextSpan(
+            text: word.substring(preIndex, preIndex + keyword.length),
+            style: keywordStyle));
+      }
+      String val = arr[i];
+      if (val != null && val.length > 0) {
+        spans.add(TextSpan(text: val, style: normalStyle));
+      }
+    }
+    return spans;
   }
 }

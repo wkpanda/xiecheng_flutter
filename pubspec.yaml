@@ -56,6 +56,11 @@ flutter:
     - assets/images/banner1.jpg
     - assets/images/banner2.jpg
     - assets/images/banner3.png
+    - assets/images/type_channelgroup.png
+    - assets/images/type_channelgs.png
+    - assets/images/type_channelplane.png
+    - assets/data/
+    - assets/images/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 
